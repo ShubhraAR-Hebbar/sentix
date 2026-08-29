@@ -8,23 +8,36 @@ This module handles Natural Language Processing (NLP) tasks:
 4. Key Driver Extraction (most influential positive & negative words)
 """
 
+import os
 import re
 import math
 from typing import Dict, List, Any
 import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
+# Ensure serverless-safe writable NLTK directory for platforms like Vercel
+nltk_data_dir = os.path.join(os.getenv("TEMP", "/tmp"), "nltk_data")
+if nltk_data_dir not in nltk.data.path:
+    nltk.data.path.append(nltk_data_dir)
+
 # Ensure required NLTK datasets are downloaded silently
 try:
     nltk.data.find('sentiment/vader_lexicon.zip')
 except LookupError:
-    nltk.download('vader_lexicon', quiet=True)
+    try:
+        nltk.download('vader_lexicon', quiet=True)
+    except Exception:
+        nltk.download('vader_lexicon', download_dir=nltk_data_dir, quiet=True)
 
 try:
     nltk.data.find('tokenizers/punkt.zip')
 except LookupError:
-    nltk.download('punkt', quiet=True)
-    nltk.download('punkt_tab', quiet=True)
+    try:
+        nltk.download('punkt', quiet=True)
+        nltk.download('punkt_tab', quiet=True)
+    except Exception:
+        nltk.download('punkt', download_dir=nltk_data_dir, quiet=True)
+        nltk.download('punkt_tab', download_dir=nltk_data_dir, quiet=True)
 
 # Initialize VADER analyzer
 _vader = SentimentIntensityAnalyzer()

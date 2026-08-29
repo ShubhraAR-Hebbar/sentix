@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SentimAI Studio - AI-Powered Sentiment & Emotion Analysis</title>
+  <meta name="description" content="A state-of-the-art AI powered sentiment and emotion analysis dashboard. Analyze customer feedback, tweets, and reviews in real-time.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <!-- Background Glow Accents -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
+  <div class="app-container">
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="header-brand">
+        <div class="brand-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"></path>
+            <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+            <line x1="9" y1="9" x2="9.01" y2="9"></line>
+            <line x1="15" y1="9" x2="15.01" y2="9"></line>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1 class="brand-title">Sentim<span class="gradient-text">AI</span> Studio</h1>
+          <p class="brand-subtitle">AI-Powered Sentiment & Emotion Intelligence</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div id="backend-status-badge" class="status-badge online">
+          <span class="status-dot"></span>
+          <span id="backend-status-text">NLP Engine Active</span>
+        </div>
+        <button id="btn-guide-modal" class="btn btn-secondary btn-sm" title="Learn how NLP AI works">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          How It Works
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Navigation Tabs -->
+    <nav class="nav-tabs" role="tablist">
+      <button id="tab-btn-single" class="nav-tab active" role="tab" aria-selected="true" data-tab="single-tab">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        Single Text Analyzer
+      </button>
+      <button id="tab-btn-batch" class="nav-tab" role="tab" aria-selected="false" data-tab="batch-tab">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        Batch & CSV Reviews
+      </button>
+      <button id="tab-btn-learn" class="nav-tab" role="tab" aria-selected="false" data-tab="learn-tab">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+        </svg>
+        NLP Knowledge Lab
+      </button>
+    </nav>
+
+    <!-- TAB 1: Single Text Analysis -->
+    <main id="single-tab" class="tab-content active">
+      <!-- Input Panel -->
+      <section class="card input-card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="card-badge">Input</span>
+            <h2 class="card-title">Enter Text to Analyze</h2>
+          </div>
+          <div class="presets-container">
+            <span class="presets-label">Presets:</span>
+            <div id="presets-bar" class="presets-list">
+              <!-- Dynamically populated presets -->
+            </div>
+          </div>
+        </div>
+
+        <div class="input-area-wrapper">
+          <textarea 
+            id="text-input" 
+            class="text-input" 
+            placeholder="Type or paste any sentence, customer review, tweet, or message here to analyze sentiment in real-time..."
+            rows="4"
+          ></textarea>
+        </div>
+
+        <div class="input-actions-bar">
+          <div class="input-meta">
+            <span id="char-count" class="meta-item">0 chars</span>
+            <span class="meta-dot">•</span>
+            <span id="word-count" class="meta-item">0 words</span>
+            <span class="meta-dot">•</span>
+            <label class="live-toggle-label">
+              <input type="checkbox" id="live-toggle" checked>
+              <span class="toggle-slider"></span>
+              <span class="toggle-text">Real-time Analysis</span>
+            </label>
+          </div>
+          <div class="btn-group">
+            <button id="btn-clear" class="btn btn-secondary" title="Clear text">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              Clear
+            </button>
+            <button id="btn-analyze" class="btn btn-primary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+              Analyze Sentiment
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Analysis Results Dashboard -->
+      <section id="results-dashboard" class="results-grid">
+        <!-- Main Verdict & Gauge Card -->
+        <div class="card verdict-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="card-badge">Verdict</span>
+              <h2 class="card-title">Sentiment Verdict</h2>
+            </div>
+            <span id="intensity-badge" class="badge-pill">Mild</span>
+          </div>
+
+          <div class="gauge-section">
+            <div class="gauge-meter-wrapper">
+              <svg class="gauge-svg" viewBox="0 0 200 120">
+                <!-- Background Arc -->
+                <path class="gauge-bg-arc" d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke-width="14" stroke-linecap="round"/>
+                <!-- Colored Arc Fill -->
+                <path id="gauge-fill-arc" class="gauge-fill-arc" d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke-width="14" stroke-linecap="round"/>
+                <!-- Needle -->
+                <line id="gauge-needle" class="gauge-needle" x1="100" y1="100" x2="100" y2="35" stroke-width="4" stroke-linecap="round"/>
+                <circle cx="100" cy="100" r="7" class="gauge-center-dot"/>
+              </svg>
+              <div class="gauge-labels">
+                <span class="lbl-neg">Negative (-1.0)</span>
+                <span class="lbl-neu">Neutral (0.0)</span>
+                <span class="lbl-pos">Positive (+1.0)</span>
+              </div>
+            </div>
+
+            <div class="verdict-details">
+              <div class="verdict-main-row">
+                <span id="verdict-emoji" class="verdict-emoji">😊</span>
+                <div>
+                  <h3 id="verdict-label" class="verdict-label positive">Positive</h3>
+                  <p id="verdict-score-text" class="verdict-score">Compound Score: <strong id="val-compound">+0.00</strong></p>
+                </div>
+              </div>
+
+              <div class="verdict-meta-grid">
+                <div class="meta-box">
+                  <span class="meta-box-title">AI Confidence</span>
+                  <span id="val-confidence" class="meta-box-value">95%</span>
+                </div>
+                <div class="meta-box">
+                  <span class="meta-box-title">Tone Type</span>
+                  <span id="val-subjectivity" class="meta-box-value">Subjective</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Polarity Trio Progress -->
+          <div class="polarity-bars-container">
+            <div class="polarity-bar-item">
+              <div class="polarity-bar-header">
+                <span class="text-pos">Positive</span>
+                <span id="val-pos-pct" class="bar-pct">0%</span>
+              </div>
+              <div class="bar-track">
+                <div id="bar-pos" class="bar-fill pos-fill" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <div class="polarity-bar-item">
+              <div class="polarity-bar-header">
+                <span class="text-neu">Neutral</span>
+                <span id="val-neu-pct" class="bar-pct">100%</span>
+              </div>
+              <div class="bar-track">
+                <div id="bar-neu" class="bar-fill neu-fill" style="width: 100%"></div>
+              </div>
+            </div>
+
+            <div class="polarity-bar-item">
+              <div class="polarity-bar-header">
+                <span class="text-neg">Negative</span>
+                <span id="val-neg-pct" class="bar-pct">0%</span>
+              </div>
+              <div class="bar-track">
+                <div id="bar-neg" class="bar-fill neg-fill" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Emotion Spectrum Card -->
+        <div class="card emotions-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="card-badge">Emotions</span>
+              <h2 class="card-title">Emotion Spectrum</h2>
+            </div>
+            <span id="dominant-emotion-badge" class="badge-pill joy-pill">Dominant: Joy</span>
+          </div>
+
+          <div class="emotions-list">
+            <!-- Joy -->
+            <div class="emotion-row">
+              <div class="emotion-label-col">
+                <span class="emotion-icon">🌟</span>
+                <span class="emotion-name">Joy / Delight</span>
+              </div>
+              <div class="emotion-bar-track">
+                <div id="bar-emo-joy" class="emotion-fill joy-bar" style="width: 0%"></div>
+              </div>
+              <span id="val-emo-joy" class="emotion-pct">0%</span>
+            </div>
+
+            <!-- Trust / Calm -->
+            <div class="emotion-row">
+              <div class="emotion-label-col">
+                <span class="emotion-icon">🛡️</span>
+                <span class="emotion-name">Trust / Calm</span>
+              </div>
+              <div class="emotion-bar-track">
+                <div id="bar-emo-trust" class="emotion-fill trust-bar" style="width: 0%"></div>
+              </div>
+              <span id="val-emo-trust" class="emotion-pct">0%</span>
+            </div>
+
+            <!-- Surprise -->
+            <div class="emotion-row">
+              <div class="emotion-label-col">
+                <span class="emotion-icon">⚡</span>
+                <span class="emotion-name">Surprise / Awe</span>
+              </div>
+              <div class="emotion-bar-track">
+                <div id="bar-emo-surprise" class="emotion-fill surprise-bar" style="width: 0%"></div>
+              </div>
+              <span id="val-emo-surprise" class="emotion-pct">0%</span>
+            </div>
+
+            <!-- Sadness -->
+            <div class="emotion-row">
+              <div class="emotion-label-col">
+                <span class="emotion-icon">🌧️</span>
+                <span class="emotion-name">Sadness / Regret</span>
+              </div>
+              <div class="emotion-bar-track">
+                <div id="bar-emo-sadness" class="emotion-fill sadness-bar" style="width: 0%"></div>
+              </div>
+              <span id="val-emo-sadness" class="emotion-pct">0%</span>
+            </div>
+
+            <!-- Anger -->
+            <div class="emotion-row">
+              <div class="emotion-label-col">
+                <span class="emotion-icon">💥</span>
+                <span class="emotion-name">Anger / Hostility</span>
+              </div>
+              <div class="emotion-bar-track">
+                <div id="bar-emo-anger" class="emotion-fill anger-bar" style="width: 0%"></div>
+              </div>
+              <span id="val-emo-anger" class="emotion-pct">0%</span>
+            </div>
+
+            <!-- Fear -->
+            <div class="emotion-row">
+              <div class="emotion-label-col">
+                <span class="emotion-icon">⚠️</span>
+                <span class="emotion-name">Fear / Anxiety</span>
+              </div>
+              <div class="emotion-bar-track">
+                <div id="bar-emo-fear" class="emotion-fill fear-bar" style="width: 0%"></div>
+              </div>
+              <span id="val-emo-fear" class="emotion-pct">0%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Token Highlighter & Driver Words Card -->
+        <div class="card tokens-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="card-badge">Inspector</span>
+              <h2 class="card-title">Token Sentiment Highlighter</h2>
+            </div>
+            <div class="token-legend">
+              <span class="legend-dot dot-pos"></span> Positive
+              <span class="legend-dot dot-neg"></span> Negative
+              <span class="legend-dot dot-neu"></span> Neutral
+            </div>
+          </div>
+
+          <div class="token-highlight-box" id="token-highlight-container">
+            <span class="placeholder-text">Enter text to see live word-by-word sentiment highlights...</span>
+          </div>
+
+          <!-- Key Drivers Row -->
+          <div class="drivers-row">
+            <div class="driver-box positive-drivers">
+              <span class="driver-title">Key Positive Words</span>
+              <div id="positive-pills" class="pills-wrap">
+                <span class="empty-pill">None detected</span>
+              </div>
+            </div>
+            <div class="driver-box negative-drivers">
+              <span class="driver-title">Key Negative Words</span>
+              <div id="negative-pills" class="pills-wrap">
+                <span class="empty-pill">None detected</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Natural Language Explanation -->
+          <div class="ai-explanation-box">
+            <div class="explanation-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+            </div>
+            <p id="ai-explanation-text">AI analysis summary will appear here.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- TAB 2: Batch & CSV Reviews -->
+    <section id="batch-tab" class="tab-content">
+      <div class="card batch-input-card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="card-badge">Batch Mode</span>
+            <h2 class="card-title">Analyze Multiple Reviews or Upload CSV</h2>
+          </div>
+          <button id="btn-batch-preset" class="btn btn-secondary btn-sm">Load Sample Dataset</button>
+        </div>
+
+        <div class="batch-split">
+          <!-- Textarea multi line -->
+          <div class="batch-input-col">
+            <label class="input-sublabel" for="batch-textarea">Paste text reviews (one per line):</label>
+            <textarea 
+              id="batch-textarea" 
+              class="text-input batch-area" 
+              placeholder="Paste multiple sentences or reviews here (each line is analyzed as a separate review)..."
+              rows="6"
+            ></textarea>
+          </div>
+
+          <!-- Dropzone CSV -->
+          <div class="batch-upload-col">
+            <label class="input-sublabel">Or Upload a CSV / TXT file:</label>
+            <div id="file-dropzone" class="file-dropzone">
+              <input type="file" id="file-upload-input" accept=".csv,.txt" class="file-input-hidden">
+              <div class="dropzone-content">
+                <div class="dropzone-icon">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                </div>
+                <p class="dropzone-title">Click to upload or drag & drop</p>
+                <span class="dropzone-subtitle">Supports .CSV, .TXT (Customer feedback, product reviews)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="input-actions-bar">
+          <span id="batch-count-status" class="meta-item">Ready to process</span>
+          <button id="btn-run-batch" class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+            Run Batch Analysis
+          </button>
+        </div>
+      </div>
+
+      <!-- Batch Results Section -->
+      <div id="batch-results-section" class="batch-results-wrap hidden">
+        <!-- Aggregate Stats Cards -->
+        <div class="batch-stats-grid">
+          <div class="card stat-card">
+            <span class="stat-title">Total Reviews Analyzed</span>
+            <span id="batch-stat-total" class="stat-number">0</span>
+            <span class="stat-subtitle">Entries processed</span>
+          </div>
+
+          <div class="card stat-card">
+            <span class="stat-title">Overall Consensus</span>
+            <span id="batch-stat-verdict" class="stat-number text-pos">Positive</span>
+            <span id="batch-stat-avg-score" class="stat-subtitle">Avg Score: +0.00</span>
+          </div>
+
+          <div class="card stat-card wide-stat-card">
+            <span class="stat-title">Sentiment Distribution</span>
+            <div class="distribution-stacked-bar">
+              <div id="dist-bar-pos" class="dist-segment pos" style="width: 50%" title="Positive"></div>
+              <div id="dist-bar-neu" class="dist-segment neu" style="width: 25%" title="Neutral"></div>
+              <div id="dist-bar-neg" class="dist-segment neg" style="width: 25%" title="Negative"></div>
+            </div>
+            <div class="dist-legend">
+              <span id="dist-lbl-pos" class="text-pos">Positive: 50%</span>
+              <span id="dist-lbl-neu" class="text-neu">Neutral: 25%</span>
+              <span id="dist-lbl-neg" class="text-neg">Negative: 25%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detailed Table -->
+        <div class="card table-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="card-badge">Breakdown</span>
+              <h2 class="card-title">Itemized Analysis Table</h2>
+            </div>
+            <div class="btn-group">
+              <button id="btn-export-csv" class="btn btn-secondary btn-sm">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Export CSV
+              </button>
+              <button id="btn-export-json" class="btn btn-secondary btn-sm">Export JSON</button>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="batch-table">
+              <thead>
+                <tr>
+                  <th style="width: 50px;">#</th>
+                  <th>Text Review</th>
+                  <th style="width: 120px;">Verdict</th>
+                  <th style="width: 100px;">Score</th>
+                  <th style="width: 140px;">Dominant Emotion</th>
+                  <th style="width: 180px;">Key Drivers</th>
+                </tr>
+              </thead>
+              <tbody id="batch-table-body">
+                <!-- Rows injected by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: Knowledge Lab -->
+    <section id="learn-tab" class="tab-content">
+      <div class="card knowledge-card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <span class="card-badge">NLP Curriculum</span>
+            <h2 class="card-title">How Sentiment Analysis AI Works (Beginner Guide)</h2>
+          </div>
+        </div>
+
+        <div class="curriculum-grid">
+          <div class="concept-card">
+            <div class="concept-icon">🧠</div>
+            <h3>1. What is Natural Language Processing?</h3>
+            <p>NLP is a branch of Artificial Intelligence (AI) that enables computers to understand, interpret, and generate human language. Sentiment analysis decodes the subjective emotional state behind words.</p>
+          </div>
+
+          <div class="concept-card">
+            <div class="concept-icon">📐</div>
+            <h3>2. The VADER Algorithm</h3>
+            <p><strong>VADER</strong> (Valence Aware Dictionary and sEntiment Reasoner) uses a curated lexicon of words mapped to intensity ratings, combined with 5 grammatical heuristic rules (capitalization, punctuation, booster words, negations).</p>
+          </div>
+
+          <div class="concept-card">
+            <div class="concept-icon">⚡</div>
+            <h3>3. How Scores are Calculated</h3>
+            <p>Scores are normalized into a <strong>Compound Score</strong> between <code>-1.0</code> (extreme negative) and <code>+1.0</code> (extreme positive). Sentences with scores $\ge +0.05$ are categorized as Positive, while $\le -0.05$ are Negative.</p>
+          </div>
+
+          <div class="concept-card">
+            <div class="concept-icon">🚀</div>
+            <h3>4. Modern Transformers vs Lexicons</h3>
+            <p>While Lexicon analyzers like VADER provide instant, lightweight zero-latency analysis, Deep Learning Transformer models (like BERT and RoBERTa) use multi-head self-attention to understand context and sarcasm.</p>
+          </div>
+        </div>
+
+        <!-- Visual NLP Pipeline Diagram -->
+        <div class="pipeline-section">
+          <h3 class="pipeline-title">The End-to-End Sentiment Processing Pipeline</h3>
+          <div class="pipeline-flow">
+            <div class="pipe-step">
+              <span class="step-num">Step 1</span>
+              <h4>Raw Text Input</h4>
+              <p>"I love this project!"</p>
+            </div>
+            <div class="pipe-arrow">➜</div>
+            <div class="pipe-step">
+              <span class="step-num">Step 2</span>
+              <h4>Tokenization</h4>
+              <p>['I', 'love', 'this', 'project', '!']</p>
+            </div>
+            <div class="pipe-arrow">➜</div>
+            <div class="pipe-step">
+              <span class="step-num">Step 3</span>
+              <h4>Valence Lookup</h4>
+              <p>love = +3.2, ! = modifier</p>
+            </div>
+            <div class="pipe-arrow">➜</div>
+            <div class="pipe-step">
+              <span class="step-num">Step 4</span>
+              <h4>Normalization</h4>
+              <p>Compound: +0.67</p>
+            </div>
+            <div class="pipe-arrow">➜</div>
+            <div class="pipe-step highlight-step">
+              <span class="step-num">Step 5</span>
+              <h4>Verdict & Emotion</h4>
+              <p>Positive (Joy: 82%)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Built with Python, FastAPI, and NLTK • SentimAI Studio</p>
+    </footer>
+  </div>
+
+  <!-- How It Works Modal -->
+  <div id="guide-modal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">SentimAI Quick Guide</h3>
+        <button id="modal-close-btn" class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Welcome to <strong>SentimAI Studio</strong>! Here is how to use and learn from this project:</p>
+        <ul>
+          <li><strong>Real-time Analysis:</strong> Type any text into the box to see live sentiment updates as you type.</li>
+          <li><strong>Explore Presets:</strong> Click on preset tags (e.g. <em>5-Star Review</em>, <em>Support Ticket</em>) to test real-world scenarios.</li>
+          <li><strong>Token Highlighting:</strong> Look at the inspector box to see which specific words contributed positive (green) or negative (red) polarity.</li>
+          <li><strong>Batch Analysis:</strong> Switch to the Batch tab to test multiple reviews at once or upload CSV datasets.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
